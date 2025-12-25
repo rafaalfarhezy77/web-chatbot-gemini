@@ -1,5 +1,5 @@
 import os
-from flask import Flask , render_template , request , jsonify
+from flask import Flask , render_template , request , jsonify , session
 from google import genai
 from dotenv import load_dotenv
 
