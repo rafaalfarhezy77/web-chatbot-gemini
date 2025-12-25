@@ -1,5 +1,5 @@
 import os
-from flask import Flask , render_template , request , jsonify , session
+from flask import Flask , render_template , request , jsonify , session 
 from google import genai
 from google.genai import types
 from groq import Groq
@@ -50,7 +50,7 @@ def chat():
         
         bot_reply = response.text
         
-        chat_history.append({"role" : "user" , "parts" : [{"text" : bot_reply}]})
+        chat_history.append({"role" : "model" , "parts" : [{"text" : bot_reply}]})
         
         session['history'] = chat_history
         
@@ -59,15 +59,17 @@ def chat():
         if "429" in str(e) or "limit" in str(e).lower():
             print("Gemini limit switch ke gemma 3...")
             gemma_message = [{"role" : "system" , "content" : karakter_bot}]
-            for msg in messages :
+            for msg in chat_history :
                 role = "assistant" if msg["role"] == "model" else "user"
                 gemma_message.append({"role" : role , "content" : msg["parts"][0]["text"]})
                 
-            response = client_gemma.chat.completions.create(
+            response_gemma = client_gemma.chat.completions.create(
                 model="llama-3.1-8b-instant",
                 messages=  gemma_message,
             )
-            return response.choices[0].message.content + " (Sent via Gemma 3)"
+            reply_gemma = response_gemma.choices[0].message.content
+            
+            return jsonify({"reply" : reply_gemma})
             
         return jsonify({"reply" : f"Error nih masbro {str(e)}"}), 500
     
