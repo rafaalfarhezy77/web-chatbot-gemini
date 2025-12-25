@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = "SeCrEtKeYsEsSiOn"
 
 client = genai.Client(api_key = os.getenv("GEMINI_API_KEY"))
-model_name = "gemini-2.5-flash"
+model_name = "gemini-2.5-flash-lite"
 
 nama_bot = "ILY"
 karakter_bot = f"""Kamu adalah {nama_bot}, chatbot AI yang berperan sebagai teman curhat dan partner refleksi mental.
@@ -53,6 +53,8 @@ def chat():
         
         return jsonify({"reply" : response.text})
     except Exception as e :
+        if "429" in str(e) :
+            return jsonify({"reply" : "Maaf ya aku tinggal dulu, jatah harianku habis. Tetep semangat ya kita ngobrol lagi besok :)"})
         return jsonify({"reply" : f"Error nih masbro {str(e)}"}), 500
     
 if __name__ == '__main__':
