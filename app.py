@@ -57,7 +57,7 @@ def chat():
         return jsonify({"reply" : response.text})
     except Exception as e :
         if "429" in str(e) or "limit" in str(e).lower():
-            print("Gemini limit switch ke gemma 3...")
+            print("Gemini limit switch ke ai backup...")
             gemma_message = [{"role" : "system" , "content" : karakter_bot}]
             for msg in chat_history :
                 role = "assistant" if msg["role"] == "model" else "user"
