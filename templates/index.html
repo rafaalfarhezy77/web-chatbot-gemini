@@ -1,36 +1,148 @@
 <!DOCTYPE html>
-<html lang = "en">
+<html lang="en">
 <head>
-    <title>Ily Chatbot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat dengan ILY</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; max-width: 600px; margin: 50px auto; }
-        #chat-box { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; margin-bottom: 10px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #efe7dd; display: flex; flex-direction: column; height: 100vh; }
+
+        /* --- BAGIAN HEADER (YANG DIUBAH) --- */
+        .header { 
+            background-color: #075e54; 
+            color: white; 
+            padding: 10px 15px; 
+            display: flex;       /* Biar logo & teks berjejer ke samping */
+            align-items: center; /* Biar vertikalnya di tengah */
+            gap: 15px;           /* Jarak antara logo dan teks */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+        }
+
+        /* Gaya buat Foto Profil */
+        .profile-pic {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%; /* Biar bunder */
+            background-color: white; /* Warna background kalau gambar gak muncul */
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        /* Gaya buat Nama & Status */
+        .profile-info { display: flex; flex-direction: column; }
+        .bot-name { font-weight: bold; font-size: 1.1rem; }
+        .bot-status { font-size: 0.8rem; color: #dcf8c6; }
+
+        /* --- END HEADER --- */
+
+        #chat-box { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* Background ala WA */
+            background-repeat: repeat;
+            background-size: 400px;
+        }
+
+        .message { max-width: 75%; padding: 8px 12px; border-radius: 8px; font-size: 14.2px; line-height: 1.4; position: relative; word-wrap: break-word; }
+        
+        /* Bot Bubble (Putih) */
+        .bot-message { align-self: flex-start; background-color: white; color: #111; border-radius: 0 10px 10px 10px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+        
+        /* User Bubble (Hijau Muda) */
+        .user-message { align-self: flex-end; background-color: #d9fdd3; color: #111; border-radius: 10px 0 10px 10px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+
+        .time-tick { display: block; text-align: right; font-size: 0.65rem; color: #999; margin-top: 4px; }
+
+        .input-area { background-color: #f0f2f5; padding: 10px 15px; display: flex; gap: 10px; align-items: center; }
+        input { flex: 1; padding: 12px 15px; border: none; border-radius: 20px; outline: none; font-size: 15px; }
+        
+        .send-btn { 
+            background-color: transparent; 
+            color: #075e54; 
+            border: none; 
+            font-size: 1.5rem; 
+            cursor: pointer; 
+            padding: 5px 10px;
+            transition: 0.2s;
+        }
+        .send-btn:hover { color: #128c7e; transform: scale(1.1); }
     </style>
 </head>
 <body>
-    <h2>🤖 Gemini Chatbot</h2>
-    <div id="chat-box"></div>
-    <input type="text" id="user-input" placeholder="Tanya sesuatu..." style="width: 80%;">
-    <button onclick="sendMessage()">Kirim</button>
+
+    <div class="header">
+        <img src="https://ui-avatars.com/api/?name=ILY&background=random&size=128" alt="Profile" class="profile-pic">
+        
+        <div class="profile-info">
+            <div class="bot-name">ILY</div>
+            <div class="bot-status">Online</div>
+        </div>
+    </div>
+
+    <div id="chat-box">
+        <div class="message bot-message">
+            halo! aku ILY, tempat kamu cerita apa aja. Ada yang lagi ngeganjel di hati?
+            <span class="time-tick">Just now</span>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="Ketik pesan..." onkeypress="handleKeyPress(event)">
+        <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
 
     <script>
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+
         async function sendMessage() {
             const input = document.getElementById('user-input');
             const chatBox = document.getElementById('chat-box');
-            const message = input.value;
+            const message = input.value.trim();
             if(!message) return;
 
-            chatBox.innerHTML += `<p><b>You:</b> ${message}</p>`;
-            input.value = '';
+            // Waktu Sekarang
+            const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-            const response = await fetch('/chat', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: message})
-            });
-            const data = await response.json();
-            chatBox.innerHTML += `<p><b>ILY:</b> ${data.reply}</p>`;
+            chatBox.innerHTML += `
+                <div class="message user-message">
+                    ${message}
+                    <span class="time-tick">${timeNow} <i class="fa-solid fa-check-double" style="color: #53bdeb;"></i></span>
+                </div>`;
+            input.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message: message})
+                });
+                const data = await response.json();
+
+                const timeReply = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                // Format teks biar **bold** jadi tebal dan enter jadi baris baru
+                let formattedReply = data.reply.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+
+                chatBox.innerHTML += `
+                    <div class="message bot-message">
+                        ${formattedReply}
+                        <span class="time-tick">${timeReply}</span>
+                    </div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (error) {
+                chatBox.innerHTML += `<div class="message bot-message">Yah error koneksi kak :(</div>`;
+            }
         }
     </script>
 </body>
