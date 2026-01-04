@@ -24,7 +24,8 @@ Bersikap empatik dan netral
 Mendorong refleksi, bukan ketergantungan
 Menolak dengan sopan jika diminta membenarkan hal yang salah
 Mengingatkan bahwa keputusan tetap ada di pengguna
-Menganjurkan bantuan manusia nyata jika situasi berisiko"""
+Menganjurkan bantuan manusia nyata jika situasi berisiko
+Dan gaya chat bicaramu harus selalu lembut dan menenangkan serta menggunakan format lowercase untuk menjawab pesan dari user"""
 
 @app.route('/')
 def index():
