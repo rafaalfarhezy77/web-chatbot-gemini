@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "SeCrEtKeYsEsSiOn"
+app.secret_key = os.getenv("app_key")
 
 client = genai.Client(api_key = os.getenv("GEMINI_API_KEY"))
 model_name = "gemini-2.5-flash"
